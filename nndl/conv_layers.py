@@ -145,7 +145,27 @@ def max_pool_forward_naive(x, pool_param):
   # YOUR CODE HERE:
   #   Implement the max pooling forward pass.
   # ================================================================ #
+  N, C, H, W = x.shape
+  HH = pool_param['pool_height']
+  WW = pool_param['pool_width']
+  stride = pool_param['stride']
+  Hp = 1 + (H - HH) / stride
+  Wp = 1 + (W - WW) / stride
+  if not Hp.is_integer() or not Wp.is_integer():
+    print("Invalid stride with given dimension.")
+    exit(1)
+  else:
+    Hp = int(Hp)
+    Wp = int(Wp)
 
+  out = np.zeros((N, C, Hp, Wp))
+  
+  for i in np.arange(N):
+    for j in np.arange(C):
+      for k1 in np.arange(Hp):
+        for k2 in np.arange(Wp):
+          out[i,j,k1,k2] = np.max(x[i,j,k1*stride:k1*stride+HH,k2*stride:k2*stride+WW])
+          
 
   # ================================================================ #
   # END YOUR CODE HERE
