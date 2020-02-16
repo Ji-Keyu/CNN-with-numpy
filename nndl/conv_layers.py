@@ -55,15 +55,15 @@ def conv_forward_naive(x, w, b, conv_param):
   else:
     Hp = int(Hp)
     Wp = int(Wp)
-  out = np.zeros((N, F, int(Hp), int(Wp)))
+  out = np.zeros((N, F, Hp, Wp))
   
-  x = np.pad(x, ((0,0), (0,0), (pad,pad), (pad,pad)), 'constant', constant_values=0)
+  xpad = np.pad(x, ((0,0), (0,0), (pad,pad), (pad,pad)), 'constant', constant_values=0)
 
   for i in np.arange(N):
     for j in np.arange(F):
-      for k2 in np.arange(Wp):
-        for k1 in np.arange(Hp):
-          out[i,j,k1,k2] += np.sum(x[i,:,k1*stride:k1*stride+HH,k2*stride:k2*stride+WW]*w[j])+b[j]
+      for k1 in np.arange(Hp):
+        for k2 in np.arange(Wp):
+          out[i,j,k1,k2] = np.sum(xpad[i,:,k1*stride:k1*stride+HH,k2*stride:k2*stride+WW]*w[j])+b[j]
 
   print(out)
   # ================================================================ #
@@ -101,8 +101,22 @@ def conv_backward_naive(dout, cache):
   #   Implement the backward pass of a convolutional neural network.
   #   Calculate the gradients: dx, dw, and db.
   # ================================================================ #
+  dx = np.zeros(xpad.shape)
+  dw = np.zeros(w.shape)
+  db = np.zeros(b.shape)
+  for i in np.arange(N):
+    for j in np.arange(F):
+      for k1 in np.arange(out_height):
+        for k2 in np.arange(out_width):
+          db[j] += dout[i,j,k1,k2]
+          
+          dx[i,:,k1*stride:k1*stride+f_height,k2*stride:k2*stride+f_width] += dout[i,j,k1,k2]*w[j]
 
+          dw[j] += xpad[i,:,k1*stride:k1*stride+f_height,k2*stride:k2*stride+f_width]*dout[i,j,k1,k2]
+          #notice that these two very similar with forward
 
+  dx = dx[:,:,pad:-pad,pad:-pad]
+  #"unpad"
   # ================================================================ #
   # END YOUR CODE HERE
   # ================================================================ #
