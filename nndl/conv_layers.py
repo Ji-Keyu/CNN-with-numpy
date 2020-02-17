@@ -250,7 +250,13 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
   #   You may find it useful to use the batchnorm forward pass you 
   #   implemented in HW #4.
   # ================================================================ #
-  
+  N, C, H, W = x.shape
+  x = x.reshape((N,C,H*W))  #flatten lower 2 dims
+  x = x.transpose((1,2,0))  #pull out filter dim
+  x = x.reshape((C,N*H*W))  #flatten lower dims
+  x = x.transpose()         #T to fit arg format
+  out, cache = batchnorm_forward(x, gamma, beta, bn_param)
+  out = out.transpose().reshape((C,H*W,N)).transpose((2,0,1)).reshape(N,C,H,W)
   
 
   # ================================================================ #
