@@ -288,7 +288,13 @@ def spatial_batchnorm_backward(dout, cache):
   #   You may find it useful to use the batchnorm forward pass you 
   #   implemented in HW #4.
   # ================================================================ #
-  
+  N, C, H, W = dout.shape
+  dout = dout.reshape((N,C,H*W))
+  dout = dout.transpose((1,2,0))
+  dout = dout.reshape((C,N*H*W))
+  dout = dout.transpose()
+  dx, dgamma, dbeta = batchnorm_backward(dout, cache)
+  dx = dx.transpose().reshape((C,H*W,N)).transpose((2,0,1)).reshape(N,C,H,W)
 
   # ================================================================ #
   # END YOUR CODE HERE
