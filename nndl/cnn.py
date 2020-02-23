@@ -60,10 +60,20 @@ class ThreeLayerConvNet(object):
     #         drawn from a Gaussian distribution with zero mean and 
     #         standard deviation given by weight_scale.
     # ================================================================ #
+    conv_stride = 1 
+    pad = (filter_size - 1) / 2
+
+    pool_height = 2
+    pool_width = 2
+    pool_stride = 2
+
     C, H, W = input_dim
+
+    HH = (((H-filter_size+2*pad)/conv_stride+1)-pool_height)/pool_stride+1
+    WW = (((W-filter_size+2*pad)/conv_stride+1)-pool_width)/pool_stride+1
     self.params['W1'] = weight_scale * np.random.randn(num_filters, C, filter_size, filter_size)
     self.params['b1'] = np.zeros(num_filters)
-    self.params['W2'] = weight_scale * np.random.randn(int(H*W*num_filters/4), hidden_dim)
+    self.params['W2'] = weight_scale * np.random.randn(int(HH*WW*num_filters), hidden_dim)
     self.params['b2'] = np.zeros(hidden_dim)
     self.params['W3'] = weight_scale * np.random.randn(hidden_dim, num_classes)
     self.params['b3'] = np.zeros(num_classes)
