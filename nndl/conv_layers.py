@@ -64,8 +64,6 @@ def conv_forward_naive(x, w, b, conv_param):
       for k1 in np.arange(Hp):
         for k2 in np.arange(Wp):
           out[i,j,k1,k2] = np.sum(xpad[i,:,k1*stride:k1*stride+HH,k2*stride:k2*stride+WW]*w[j])+b[j]
-
-  print(out)
   # ================================================================ #
   # END YOUR CODE HERE
   # ================================================================ #
